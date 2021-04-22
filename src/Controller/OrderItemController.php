@@ -101,9 +101,11 @@ class OrderItemController extends BaseOrderItemController
 
         return $this->render(
             $configuration->getTemplate(CartActions::ADD . '.html'),
-            ['configuration' => $configuration,
-            $this->metadata->getName() => $orderItem,
-            'form' => $form->createView(),]
+            [
+                $this->metadata->getName() => $orderItem,
+                'configuration' => $configuration,
+                'form' => $form->createView(),
+            ]
         );
     }
 
@@ -121,6 +123,7 @@ class OrderItemController extends BaseOrderItemController
 
             return $this->handleBadAjaxRequestView($configuration, $form);
         }
+
         $event = $this->eventDispatcher->dispatchPreEvent(CartActions::ADD, $configuration, $orderItem);
         if ($event->isStopped() && !$configuration->isHtmlRequest()) {
             throw new HttpException($event->getErrorCode(), $event->getMessage());
@@ -130,6 +133,7 @@ class OrderItemController extends BaseOrderItemController
 
             return $this->redirectHandler->redirectToIndex($configuration, $orderItem);
         }
+
         $this->messageBus->dispatch($addProductBundleToCartCommand);
         $resourceControllerEvent = $this->eventDispatcher->dispatchPostEvent(CartActions::ADD, $configuration, $orderItem);
         if ($resourceControllerEvent->hasResponse()) {
